@@ -1,0 +1,27 @@
+reconPath = "~/tools/recon-ng/"
+keys = [
+	["binaryedge_api", ""],
+	["bing_api" , ""],
+	["builtwith_api" , ""],
+	["censysio_id" , ""],
+	["censysio_secret" , ""],
+	["flickr_api" , ""],
+	["fullcontact_api" , ""],
+	["github_api" , ""],
+	["google_api" , ""],
+	["hashes_api" , ""],
+	["hibp_api" , ""],
+	["ipinfodb_api" , ""],
+	["ipstack_api" , ""],
+	["jigsaw_api" , ""],
+	["jigsaw_password" , ""],
+	["jigsaw_username" , ""],
+	["namechk_api" , ""],
+	["pwnedlist_api" , ""],
+	["pwnedlist_iv" , ""],
+	["pwnedlist_secret" , ""],
+	["shodan_api" , "f"],
+	["twitter_api" , ""],
+	["twitter_secret" , ""],
+	["virustotal_api" , ""]
+	]
