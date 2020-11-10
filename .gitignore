@@ -1,2 +1,5 @@
 *.pyc
 config_test.ini
+*.xml
+*.html
+*.xlsx

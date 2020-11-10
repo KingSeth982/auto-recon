@@ -19,8 +19,7 @@ except:
 	print("config.ini was not found, exiting...")
 	exit()
 
-
-sys.path.insert(0,config.get('recon-ng','path'))
+sys.path.insert(0,os.path.expanduser(config.get('recon-ng','path')))
 from recon.core import base
 from recon.core.framework import Colors
 
@@ -40,16 +39,22 @@ def run_module(reconBase, module, domain):
 	
 
 def run_recon(domains):
-	stamp = datetime.datetime.now().strftime('%M:%H-%m_%d_%Y')
+	stamp = datetime.datetime.now().strftime('%Y_%m_%d-%H:%M')
 	if args.workspace:
 		wspace = args.workspace
 	else:
-		wspace = domains[0]+stamp
+		wspace = domains[0]+ '-' +stamp
+		
+	previous_path = os.getcwd() + '/'
+	os.chdir(os.path.expanduser(config.get('recon-ng','path')))
 
 	reconb = base.Recon()
 	options = [base.Mode.CLI, wspace]
 	reconb.start(*options)
 	reconb.onecmd("options set TIMEOUT 100")
+	
+	os.chdir(previous_path)
+	previous_path = None
 	
 	module_list = [
 		'recon/companies-multi/whois_miner',
@@ -175,15 +180,17 @@ def run_theHarvester(reconbase, domain):
 	theHarvester = config['theHarvester']
 	previous_path = os.getcwd() + '/'
 	filename = theHarvester['temp_filename']
+	theHarvester_path = os.path.expanduser(theHarvester['path'])
 	
-	os.chdir(theHarvester['path'])
+	os.chdir(theHarvester_path)
 	subprocess.run("\'{}theHarvester.py\' -b {} -d {} \
-	-f {}".format(theHarvester['path'], theHarvester['source'],\
+	-f {}".format(theHarvester_path, theHarvester['source'],\
 	domain, "'" + previous_path + filename + ".'"), shell=True)
 	os.chdir(previous_path)
 	parse_harvester(reconbase, filename + '.xml')
 	
 	# Clears variables from memeory
+	theHarvester_path = None
 	previous_path = None
 	filename = None
 
