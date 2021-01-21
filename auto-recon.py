@@ -31,7 +31,7 @@ package_list = [
 	]
 
 	
-def run_module(reconBase, module, domain):
+def run_module(reconBase, module):
 	recon = module_load(reconBase, module)
 	recon._do_options_list('')
 	#recon._do_options_set("SOURCE " + domain)
@@ -91,7 +91,15 @@ def run_recon(domains):
 		load_hosts(reconb, args.host_file)
 		load_email(reconb, args.email_file)
 	
-	## End of theHarvester Selection	
+	## End of theHarvester Selection
+
+	## Start of Custom Modules
+
+	# This will run the dehashed module
+	if args.dehashed or args.all_paid_apis:
+		run_module(reconb, 'recon/domains-credentials/dehashed')
+
+	## End of Custom Modules
 		
 	# Runs the linkedin module if there is a specified company
 	if args.companies:
@@ -107,7 +115,7 @@ def run_recon(domains):
 	# Runs each module inside the module list
 	for module in module_list:
 		#print("Module: %s, Domain: %s" % (module, domain))
-		run_module(reconb, module, domain)
+		run_module(reconb, module)
 					
 	#Exports the DB to an excel file	
 	export_Excel(reconb, args.export)
@@ -144,8 +152,9 @@ def sync_keys(reconBase=''):
 					
 						# This section runs if one of the keys is blank, but
 						# not both of them are blank
-						if (recon_key[1] == '' or config_key[1] == '') \
-						and not(recon_key[1] == '' and config_key[1] == ''):
+						if (recon_key[1] == ''  or config_key[1] == '') \
+						and not((recon_key[1] == '' or recon_key[1] == None) \
+						and (config_key[1] == '' or config_key[1] == None)):
 							if recon_key[1] == '':
 								recon.add_key(config_key[0], config_key[1])
 								config_changed = True
@@ -284,6 +293,10 @@ theHarvester_group.add_argument("--theHarvester", help="Run theHarvester with th
 theHarvester_group.add_argument("-H", "--harvest", metavar='<filename>', dest='harvester_xml_file', help="xml file from harvester")
 theHarvester_group.add_argument("-e", dest="email_file", metavar='<filename>', type=argparse.FileType('r'), help="input file of emails from harvester", default=None)
 theHarvester_group.add_argument("-i", dest="host_file", metavar='<filename>', type=argparse.FileType('r'), help="input file of hosts from harvester", default=None)
+
+paidAPI_group = parser.add_argument_group('Paid APIs', 'This will run any modules that will require credit to be ran')
+paidAPI_group.add_argument("--run-all-paid-apis", dest="all_paid_apis", action="store_true", help="This will run all of the paid APIs")
+paidAPI_group.add_argument("--dehashed", dest="dehashed", action="store_true", help="runs the dehashed modules")
 
 # Setup argument group
 setup_group = parser.add_argument_group('Optional Setup', 'Run these to automate some setup.')
